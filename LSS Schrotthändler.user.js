@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LSS Schrotthändler
 // @namespace    www.leitstellenspiel.de
-// @version      1.1
+// @version      1.2
 // @description  Erzeugt die Möglichkeit alle Fahrzeuge eines bestimmten Typs zu löschen
 // @author       MissSobol
 // @match        https://www.leitstellenspiel.de/
@@ -56,7 +56,7 @@ function deleteSelectedVehicle() {
 
     console.log('Ausgewählter Fahrzeugtyp zum Löschen:', selectedTypeId, selectedTypeCaption);
 
-    // Holen Sie die Fahrzeug-IDs basierend auf dem ausgewählten Fahrzeugtyp
+    // Hole die Fahrzeug-IDs basierend auf dem ausgewählten Fahrzeugtyp
     const vehicleIdsToDelete = vehicles.filter(vehicle => vehicle.vehicle_type == selectedTypeId).map(vehicle => vehicle.id);
 
     // Sicherheitsabfrage vor dem Löschen
