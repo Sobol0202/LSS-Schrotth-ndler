@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LSS Schrotthändler
 // @namespace    www.leitstellenspiel.de
-// @version      0.9
+// @version      1.1
 // @description  Erzeugt die Möglichkeit alle Fahrzeuge eines bestimmten Typs zu löschen
 // @author       MissSobol
 // @match        https://www.leitstellenspiel.de/
@@ -13,6 +13,9 @@
 
 (function () {
     'use strict';
+
+    // Individueller Modal-Name
+    var modalName = "Modal_Schrott";
 
     // Funktion zum Löschen eines Fahrzeugs
     function deleteVehicle(vehicleId) {
@@ -46,34 +49,39 @@
         xhr.send();
     }
 
-    // Funktion zum Löschen des ausgewählten Fahrzeugtyps
-    function deleteSelectedVehicle() {
-        const selectedTypeId = document.getElementById('vehicleType').value;
-        const selectedTypeCaption = document.getElementById('vehicleType').options[document.getElementById('vehicleType').selectedIndex].text;
+// Funktion zum Löschen des ausgewählten Fahrzeugtyps
+function deleteSelectedVehicle() {
+    const selectedTypeId = document.getElementById('vehicleType').value;
+    const selectedTypeCaption = document.getElementById('vehicleType').options[document.getElementById('vehicleType').selectedIndex].text;
 
-        console.log('Ausgewählter Fahrzeugtyp zum Löschen:', selectedTypeId, selectedTypeCaption);
+    console.log('Ausgewählter Fahrzeugtyp zum Löschen:', selectedTypeId, selectedTypeCaption);
 
-        // Holen Sie die Fahrzeug-IDs basierend auf dem ausgewählten Fahrzeugtyp
-        const vehicleIdsToDelete = vehicles.filter(vehicle => vehicle.vehicle_type == selectedTypeId).map(vehicle => vehicle.id);
+    // Holen Sie die Fahrzeug-IDs basierend auf dem ausgewählten Fahrzeugtyp
+    const vehicleIdsToDelete = vehicles.filter(vehicle => vehicle.vehicle_type == selectedTypeId).map(vehicle => vehicle.id);
 
-        // Sicherheitsabfrage vor dem Löschen
-        var confirmDelete = confirm("Möchtest du wirklich " + vehicleIdsToDelete.length + " Fahrzeuge vom Typ " + selectedTypeCaption + " löschen?");
+    // Sicherheitsabfrage vor dem Löschen
+    var confirmDelete = confirm("Möchtest du wirklich " + vehicleIdsToDelete.length + " Fahrzeuge vom Typ " + selectedTypeCaption + " löschen?");
 
-        // Führe das Löschen aus, wenn bestätigt
-        if (confirmDelete) {
-            // Durchlaufe die zu löschenden Fahrzeuge und führe das Löschen mit Verzögerung aus
-            vehicleIdsToDelete.forEach(function (vehicleId, index) {
-                setTimeout(function () {
-                    deleteVehicle(vehicleId);
-                }, index * 100);
-            });
-        } else {
-            console.log("Löschvorgang abgebrochen.");
-        }
+    // Führe das Löschen aus, wenn bestätigt
+    if (confirmDelete) {
+        // Durchlaufe die zu löschenden Fahrzeuge und führe das Löschen mit Verzögerung aus
+        vehicleIdsToDelete.forEach(function (vehicleId, index) {
+            setTimeout(function () {
+                deleteVehicle(vehicleId);
+            }, index * 100);
+        });
 
-        // Schließe das Modal nach dem Löschen
-        closeModal();
+        // Warte 100ms und lade dann die Seite neu
+        setTimeout(function () {
+            location.reload();
+        }, 100);
+    } else {
+        console.log("Löschvorgang abgebrochen.");
     }
+
+    // Schließe das Modal nach dem Löschen
+    closeModal();
+}
 
     // Funktion zum Abrufen der Fahrzeuge über die API
     function getVehicles() {
@@ -123,9 +131,9 @@
 
                         // Erstelle das Modal-Fenster mit Dropdown-Menü
                         const modalHTML = `
-                            <div id="myModal" class="modal">
-                                <div class="modal-content myModalClass">
-                                    <span class="close" id="modalCloseBtn">&times;</span>
+                            <div id="${modalName}" class="modal">
+                                <div class="modal-content ${modalName}Content">
+                                    <span class="close" id="${modalName}CloseBtn">&times;</span>
                                     <h2>Schrotthändler</h2>
                                     <p>Bitte wähle den Fahrzeugtypen aus, den du löschen möchtest.</p>
                                     <select id="vehicleType">${options}</select>
@@ -138,7 +146,7 @@
                         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
                         // Füge Event-Listener hinzu
-                        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+                        document.getElementById(`${modalName}CloseBtn`).addEventListener('click', closeModal);
                         document.getElementById('deleteVehicleBtn').addEventListener('click', deleteSelectedVehicle);
 
                         // Rufe die Funktion zum Abrufen der Fahrzeuge auf
@@ -160,13 +168,13 @@
     // Funktion zum Öffnen des Modal-Fensters
     function openModal() {
         // Öffne das Modal-Fenster
-        document.getElementById('myModal').style.display = 'block';
+        document.getElementById(modalName).style.display = 'block';
     }
 
     // Funktion zum Schließen des Modal-Fensters
     function closeModal() {
         //console.log('Closing modal...');
-        document.getElementById('myModal').style.display = 'none';
+        document.getElementById(modalName).style.display = 'none';
     }
 
     // create a trigger-element
@@ -197,8 +205,8 @@
     var vehicles = [];
     // Füge das CSS für das Styling hinzu
     GM_addStyle(`
-        .modal {
-            display: flex;
+        #${modalName} {
+            display: none;
             justify-content: center;
             align-items: center;
             position: fixed;
@@ -209,7 +217,7 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .myModalClass {
+        .${modalName}Content {
             width: 30%;
             background-color: white;
             padding: 20px;
