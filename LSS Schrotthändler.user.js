@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         LSS Schrotthändler
 // @namespace    www.leitstellenspiel.de
-// @version      1.2
+// @version      1.3
 // @description  Erzeugt die Möglichkeit alle Fahrzeuge eines bestimmten Typs zu löschen
 // @author       MissSobol
 // @match        https://www.leitstellenspiel.de/
-// @resource     icon missingNon
+// @resource     icon https://raw.githubusercontent.com/Sobol0202/LSS-Schrotth-ndler/main/icons8-garbage-truck-64.png
 // @grant        GM_getResourceURL
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
