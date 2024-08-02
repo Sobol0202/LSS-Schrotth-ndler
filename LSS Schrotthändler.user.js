@@ -71,10 +71,10 @@ function deleteSelectedVehicle() {
             }, index * 100);
         });
 
-        // Warte 100ms und lade dann die Seite neu
+        // Warte 100ms für jedes zu löschende Fahrzeug und lade dann die Seite neu
         setTimeout(function () {
             location.reload();
-        }, 100);
+        }, 100 * vehicleIdsToDelete.length);
     } else {
         console.log("Löschvorgang abgebrochen.");
     }
